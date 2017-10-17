@@ -3,6 +3,8 @@
 #include <opencv2/imgcodecs/imgcodecs.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <rapidjson/prettywriter.h>
+
 class compare_color
 {
 public:
@@ -63,15 +65,22 @@ int main(int argc, char** argv)
 
         std::cout << ", " << colors.size() << " distinct classes:" << std::endl;
 
-        const size_t base_pos = full_name.length() - result_image_suffix.length();
-        assert(base_pos < full_name.length()); // check that we didn't just wrap
-        assert(full_name.substr(base_pos) == result_image_suffix);
-        const std::string path_filename = full_name.substr(0, base_pos) + result_path_suffix;
+        rapidjson::StringBuffer buffer;
+        rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
 
-        std::ofstream out(path_filename);
+        writer.StartArray();
 
         cv::Mat color_result;
         for (const cv::Vec3b& color : colors) {
+            writer.StartObject();
+            writer.String("color");
+            writer.StartObject();
+            {
+                writer.String("r"); writer.Int(color[2]);
+                writer.String("g"); writer.Int(color[1]);
+                writer.String("b"); writer.Int(color[0]);
+            }
+            writer.EndObject();
 
             std::cout << " - 0x" << std::hex 
                 << std::setw(2) << std::setfill('0') << static_cast<int>(color[2])
@@ -86,6 +95,32 @@ int main(int argc, char** argv)
 
             std::cout << contours.size() << " paths" << std::endl;
             
+            writer.String("color_paths");
+            writer.StartArray();
+            
+            for (const std::vector<cv::Point>& contour : contours) {
+                writer.StartArray();
+                for (const cv::Point& point : contour) {
+                    writer.StartObject();
+                    writer.String("x"); writer.Int(point.x);
+                    writer.String("y"); writer.Int(point.y);
+                    writer.EndObject();
+                }
+                writer.EndArray();
+            }
+
+            writer.EndArray();
+            writer.EndObject();
         }
+
+        writer.EndArray();
+
+        const size_t base_pos = full_name.length() - result_image_suffix.length();
+        assert(base_pos < full_name.length()); // check that we didn't just wrap
+        assert(full_name.substr(base_pos) == result_image_suffix);
+        const std::string path_filename = full_name.substr(0, base_pos) + result_path_suffix;
+
+        std::ofstream out(path_filename);
+        out << buffer.GetString();
     }
 }
