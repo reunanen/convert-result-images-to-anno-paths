@@ -112,6 +112,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opencv_core320d.lib;opencv_imgcodecs320d.lib;opencv_imgproc320d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /q /y opencv-binaries-vs-no-lfs\$(Platform)\bin\opencv_core320d.dll $(OutDir)
+xcopy /q /y opencv-binaries-vs-no-lfs\$(Platform)\bin\opencv_imgcodecs320d.dll $(OutDir)
+xcopy /q /y opencv-binaries-vs-no-lfs\$(Platform)\bin\opencv_imgproc320d.dll $(OutDir)
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -127,6 +133,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opencv_core320d.lib;opencv_imgcodecs320d.lib;opencv_imgproc320d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /q /y opencv-binaries-vs-no-lfs\$(Platform)\bin\opencv_core320d.dll $(OutDir)
+xcopy /q /y opencv-binaries-vs-no-lfs\$(Platform)\bin\opencv_imgcodecs320d.dll $(OutDir)
+xcopy /q /y opencv-binaries-vs-no-lfs\$(Platform)\bin\opencv_imgproc320d.dll $(OutDir)
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -146,6 +158,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opencv_core320.lib;opencv_imgcodecs320.lib;opencv_imgproc320.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /q /y opencv-binaries-vs-no-lfs\$(Platform)\bin\opencv_core320.dll $(OutDir)
+xcopy /q /y opencv-binaries-vs-no-lfs\$(Platform)\bin\opencv_imgcodecs320.dll $(OutDir)
+xcopy /q /y opencv-binaries-vs-no-lfs\$(Platform)\bin\opencv_imgproc320.dll $(OutDir)
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -165,6 +183,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opencv_core320.lib;opencv_imgcodecs320.lib;opencv_imgproc320.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /q /y opencv-binaries-vs-no-lfs\$(Platform)\bin\opencv_core320.dll $(OutDir)
+xcopy /q /y opencv-binaries-vs-no-lfs\$(Platform)\bin\opencv_imgcodecs320.dll $(OutDir)
+xcopy /q /y opencv-binaries-vs-no-lfs\$(Platform)\bin\opencv_imgproc320.dll $(OutDir)
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
