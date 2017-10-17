@@ -4,3 +4,6 @@
 [submodule "opencv-binaries-vs-no-lfs"]
 	path = opencv-binaries-vs-no-lfs
 	url = https://bitbucket.org/reunanen/opencv-binaries-vs-no-lfs.git
+[submodule "rapidjson"]
+	path = rapidjson
+	url = https://github.com/reunanen/rapidjson
