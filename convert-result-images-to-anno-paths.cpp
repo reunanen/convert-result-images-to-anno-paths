@@ -30,9 +30,10 @@ int main(int argc, char** argv)
     const std::string result_image_suffix = "_result.png";
     const std::string result_path_suffix = "_result_path.json";
 
+    std::cout << "Searching for result images..." << std::endl;
+
     const std::vector<dlib::file> files = dlib::get_files_in_directory_tree(argv[1], dlib::match_ending(result_image_suffix));
 
-    std::cout << "Searching for result images..." << std::endl;
     std::cout << "Converting " << files.size() << " result images..." << std::endl;
 
     cv::Vec3b background_color(0, 0, 0);
