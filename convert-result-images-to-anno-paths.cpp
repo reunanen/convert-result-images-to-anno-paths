@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 
     std::cout << "Converting " << files.size() << " result images..." << std::endl;
 
-    cv::Vec3b background_color(0, 0, 0);
+    cv::Vec3b clean_color(0, 63, 0);
 
     for (const auto& file : files) {
 
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
             const cv::Vec3b* row = result_image.ptr<cv::Vec3b>(y);
             for (int x = 0; x < result_image.cols; ++x) {
                 const cv::Vec3b& color = row[x];
-                if (color != background_color) {
+                if (color != clean_color) {
                     colors.insert(color);
                 }
             }
