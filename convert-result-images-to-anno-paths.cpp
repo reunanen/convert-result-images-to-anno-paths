@@ -52,6 +52,11 @@ int main(int argc, char** argv)
             << ", channels = " << result_image.channels()
             << ", type = 0x" << std::hex << result_image.type();
 
+        if (result_image.channels() != 4) {
+            std::cerr << std::endl << " - Expecting 4 channels: skipping..." << std::endl;
+            continue;
+        }
+
         std::set<cv::Vec4b, compare_color> colors;
 
         for (int y = 0; y < result_image.rows; ++y) {
