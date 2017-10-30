@@ -8,10 +8,10 @@
 class compare_color
 {
 public:
-    bool operator()(const cv::Vec3b& color1, const cv::Vec3b& color2)
+    bool operator()(const cv::Vec4b& color1, const cv::Vec4b& color2)
     {
-        const auto color_tuple = [](const cv::Vec3b& color) {
-            return std::make_tuple(color[0], color[1], color[2]);
+        const auto color_tuple = [](const cv::Vec4b& color) {
+            return std::make_tuple(color[0], color[1], color[2], color[3]);
         };
 
         return color_tuple(color1) < color_tuple(color2);
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 
     std::cout << "Converting " << files.size() << " result images..." << std::endl;
 
-    cv::Vec3b clean_color(0, 63, 0);
+    cv::Vec4b clean_color(0, 255, 0, 64);
 
     for (const auto& file : files) {
 
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
         std::cout << "Converting " << full_name;
 
-        const cv::Mat result_image = cv::imread(full_name);
+        const cv::Mat result_image = cv::imread(full_name, cv::IMREAD_UNCHANGED);
 
         std::cout
             << ", width = " << result_image.cols
@@ -52,12 +52,12 @@ int main(int argc, char** argv)
             << ", channels = " << result_image.channels()
             << ", type = 0x" << std::hex << result_image.type();
 
-        std::set<cv::Vec3b, compare_color> colors;
+        std::set<cv::Vec4b, compare_color> colors;
 
         for (int y = 0; y < result_image.rows; ++y) {
-            const cv::Vec3b* row = result_image.ptr<cv::Vec3b>(y);
+            const cv::Vec4b* row = result_image.ptr<cv::Vec4b>(y);
             for (int x = 0; x < result_image.cols; ++x) {
-                const cv::Vec3b& color = row[x];
+                const cv::Vec4b& color = row[x];
                 if (color != clean_color) {
                     colors.insert(color);
                 }
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
         writer.StartArray();
 
         cv::Mat color_result;
-        for (const cv::Vec3b& color : colors) {
+        for (const cv::Vec4b& color : colors) {
             writer.StartObject();
             writer.String("color");
             writer.StartObject();
@@ -80,6 +80,7 @@ int main(int argc, char** argv)
                 writer.String("r"); writer.Int(color[2]);
                 writer.String("g"); writer.Int(color[1]);
                 writer.String("b"); writer.Int(color[0]);
+                writer.String("a"); writer.Int(color[3]);
             }
             writer.EndObject();
 
@@ -87,6 +88,7 @@ int main(int argc, char** argv)
                 << std::setw(2) << std::setfill('0') << static_cast<int>(color[2])
                 << std::setw(2) << std::setfill('0') << static_cast<int>(color[1])
                 << std::setw(2) << std::setfill('0') << static_cast<int>(color[0])
+                << std::setw(2) << std::setfill('0') << static_cast<int>(color[3])
                 << ": " << std::dec;
 
             cv::inRange(result_image, color, color, color_result);
