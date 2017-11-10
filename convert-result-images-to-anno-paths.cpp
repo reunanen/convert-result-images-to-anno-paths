@@ -1,5 +1,7 @@
 ﻿#include <dlib/dir_nav/dir_nav_extensions.h>
 
+#include "cxxopts/include/cxxopts.hpp"
+
 #include <opencv2/imgcodecs/imgcodecs.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -20,19 +22,44 @@ public:
 
 int main(int argc, char** argv)
 {
-    if (argc != 2)
+    if (argc == 1)
     {
         std::cout << "Usage: " << std::endl;
         std::cout << "> convert-result-images-to-anno-paths /path/to/result/data" << std::endl;
         return 1;
     }
 
+    cxxopts::Options options("convert-result-images-to-anno-paths", "Convert result images to paths that can be loaded and shown in anno (see https://github.com/reunanen/anno)");
+
+    options.add_options()
+        ("i,input-directory", "Input image directory", cxxopts::value<std::string>())
+        ("b,blur-amount", "Set the amount of blur", cxxopts::value<int>()->default_value("0"))
+        ;
+
+    try {
+        options.parse_positional("input-directory");
+        options.parse(argc, argv);
+
+        cxxopts::check_required(options, { "input-directory" });
+
+        std::cout << "Input directory = " << options["input-directory"].as<std::string>() << std::endl;
+    }
+    catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        std::cerr << std::endl;
+        std::cerr << options.help() << std::endl;
+        return 2;
+    }
+
+    const std::string input_directory = options["input-directory"].as<std::string>();
     const std::string result_image_suffix = "_result.png";
     const std::string result_path_suffix = "_result_path.json";
 
+    const int blur_amount = options["blur-amount"].as<int>();    
+
     std::cout << "Searching for result images..." << std::endl;
 
-    const std::vector<dlib::file> files = dlib::get_files_in_directory_tree(argv[1], dlib::match_ending(result_image_suffix));
+    const std::vector<dlib::file> files = dlib::get_files_in_directory_tree(input_directory, dlib::match_ending(result_image_suffix));
 
     std::cout << "Converting " << files.size() << " result images..." << std::endl;
 
@@ -97,6 +124,11 @@ int main(int argc, char** argv)
                 << ": " << std::dec;
 
             cv::inRange(result_image, color, color, color_result);
+
+            if (blur_amount > 0) {
+                cv::blur(color_result, color_result, cv::Size(2 * blur_amount + 1, 2 * blur_amount + 1));
+                color_result = color_result > 127.5;
+            }
 
             std::vector<std::vector<cv::Point>> contours;
             cv::findContours(color_result, contours, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE);

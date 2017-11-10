@@ -7,3 +7,6 @@
 [submodule "rapidjson"]
 	path = rapidjson
 	url = https://github.com/reunanen/rapidjson
+[submodule "cxxopts"]
+	path = cxxopts
+	url = https://github.com/reunanen/cxxopts
