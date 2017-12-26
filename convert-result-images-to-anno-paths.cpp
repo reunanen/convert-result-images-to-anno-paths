@@ -77,7 +77,8 @@ int main(int argc, char** argv)
             << ", width = " << result_image.cols
             << ", height = " << result_image.rows
             << ", channels = " << result_image.channels()
-            << ", type = 0x" << std::hex << result_image.type();
+            << ", type = 0x" << std::hex << result_image.type()
+            << std::dec;
 
         if (result_image.channels() != 4) {
             std::cerr << std::endl << " - Expecting 4 channels: skipping..." << std::endl;
