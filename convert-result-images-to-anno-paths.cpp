@@ -117,6 +117,7 @@ int main(int argc, char** argv)
         ("i,input-directory", "Input image directory", cxxopts::value<std::string>())
         ("b,blur-amount", "Set the amount of blur", cxxopts::value<int>()->default_value("0"))
         ("a,append", "Append to existing files (if any)")
+        ("v,verbose", "Be verbose")
         ;
 
     try {
@@ -148,20 +149,32 @@ int main(int argc, char** argv)
 
     cv::Vec4b clean_color(0, 255, 0, 64);
 
+    const bool verbose = options.count("verbose") > 0;
+
+    size_t counter = 0;
+
     for (const auto& file : files) {
 
         const std::string& full_name = file.full_name();
 
-        std::cout << "Converting " << full_name;
+        ++counter;
+        if (verbose) {
+            std::cout << "Converting " << full_name;
+        }
+        else {
+            std::cout << "\r" << std::to_string(counter);
+        }
 
         const cv::Mat result_image = cv::imread(full_name, cv::IMREAD_UNCHANGED);
 
-        std::cout
-            << ", width = " << result_image.cols
-            << ", height = " << result_image.rows
-            << ", channels = " << result_image.channels()
-            << ", type = 0x" << std::hex << result_image.type()
-            << std::dec;
+        if (verbose) {
+            std::cout
+                << ", width = " << result_image.cols
+                << ", height = " << result_image.rows
+                << ", channels = " << result_image.channels()
+                << ", type = 0x" << std::hex << result_image.type()
+                << std::dec;
+        }
 
         if (result_image.channels() != 4) {
             std::cerr << std::endl << " - Expecting 4 channels: skipping..." << std::endl;
@@ -180,7 +193,9 @@ int main(int argc, char** argv)
             }
         }
 
-        std::cout << ", " << colors.size() << " distinct classes" << std::endl;
+        if (verbose) {
+            std::cout << ", " << colors.size() << " distinct classes" << std::endl;
+        }
 
         std::map<cv::Vec4b, std::vector<std::vector<cv::Point>>, compare_color> contours_by_color;
 
@@ -197,12 +212,14 @@ int main(int argc, char** argv)
         // Find contours in the image
         cv::Mat color_result;
         for (const cv::Vec4b& color : colors) {
-            std::cout << " - 0x" << std::hex
-                << std::setw(2) << std::setfill('0') << static_cast<int>(color[2])
-                << std::setw(2) << std::setfill('0') << static_cast<int>(color[1])
-                << std::setw(2) << std::setfill('0') << static_cast<int>(color[0])
-                << std::setw(2) << std::setfill('0') << static_cast<int>(color[3])
-                << ": " << std::dec;
+            if (verbose) {
+                std::cout << " - 0x" << std::hex
+                    << std::setw(2) << std::setfill('0') << static_cast<int>(color[2])
+                    << std::setw(2) << std::setfill('0') << static_cast<int>(color[1])
+                    << std::setw(2) << std::setfill('0') << static_cast<int>(color[0])
+                    << std::setw(2) << std::setfill('0') << static_cast<int>(color[3])
+                    << ": " << std::dec;
+            }
 
             cv::inRange(result_image, color, color, color_result);
 
@@ -214,7 +231,9 @@ int main(int argc, char** argv)
             std::vector<std::vector<cv::Point>> contours;
             cv::findContours(color_result, contours, cv::RETR_CCOMP, cv::CHAIN_APPROX_SIMPLE);
 
-            std::cout << contours.size() << " paths" << std::endl;
+            if (verbose) {
+                std::cout << contours.size() << " paths" << std::endl;
+            }
 
             contours_by_color[color] = std::move(contours);
         }
@@ -263,4 +282,6 @@ int main(int argc, char** argv)
         std::ofstream out(path_filename);
         out << buffer.GetString();
     }
+    
+    std::cout << "\rDone                 " << std::endl;
 }
